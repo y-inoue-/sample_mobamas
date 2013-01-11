@@ -34,4 +34,6 @@ SampleMobamas::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  config.action_controller.relative_url_root = "/inoue_dev" # rails3以降では廃止されたらしいが使える？
 end

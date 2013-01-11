@@ -5,3 +5,9 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+User.delete_all
+
+10.times do |number|
+  User.create(name:"user#{"%04d" % (number+1)}", cheer_point:0)
+end
