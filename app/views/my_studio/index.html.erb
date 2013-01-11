@@ -1,4 +1,5 @@
 <h1>マイスタジオ</h1>
 
-name:<%= @name %><p>
-友情pt:<%= @cheer_point %>
+name:<%= @user.name %><p>
+友情pt:<%= @user.cheer_point %>
+<%= button_to '応援', :action => "cheer" %>

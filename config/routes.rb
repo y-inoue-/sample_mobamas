@@ -1,4 +1,7 @@
+# -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  post "my_studio/cheer"
+
   get "my_studio/index"
 
   resources :users
