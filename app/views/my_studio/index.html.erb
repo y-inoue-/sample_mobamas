@@ -1,5 +1,6 @@
-<h1>マイスタジオ</h1>
+<h1>マイスタジオ(<%= @user.name %>)</h1>
 
-name:<%= @user.name %><p>
 友情pt:<%= @user.cheer_point %>
 <%= button_to '応援', :action => "cheer" %>
+
+<%= render :partial => 'shared/footer' %>
