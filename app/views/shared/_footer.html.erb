@@ -4,11 +4,17 @@
 <%= link_to 'マイスタジオ', :controller => 'my_studio', :action => 'index' %><p>
 
 <%= link_to '他ユーザーのページ', :controller => 'user_page', :action => 'index' %>
-<%= link_to 'user01', :controller => 'user_page', :action => 'index', :id => 1 %>
-<%= link_to 'user02', :controller => 'user_page', :action => 'index', :id => 2 %>
+<br>
+<p style="text-indent:2em">
+<% User.all.each do |user| %>
+  <%= link_to user.name, :controller => 'user_page', :action => 'index', :id => user.id %>
+  <% end %>
 <p>
 
 <%= link_to 'ユーザー切り替え', :controller => 'user_switch', :action => 'index' %>
-<%= link_to 'user02', :controller => 'user_switch', :action => 'index', :id => 2 %>
+<p style="text-indent:2em">
+<% User.all.each do |user| %>
+  <%= link_to user.name, :controller => 'user_switch', :action => 'index', :id => user.id %>
+  <% end %>
 <p>
 
