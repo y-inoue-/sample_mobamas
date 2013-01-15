@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  get "user_page/index"
+
   get "user_switch/index"
 
   get "user_switch/post"
