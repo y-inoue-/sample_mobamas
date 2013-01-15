@@ -1,11 +1,11 @@
 # -*- encoding : utf-8 -*-
 class MyStudioController < ApplicationController
   def index
-    get_user
+    @user = current_user
   end
 
   def cheer
-    user = get_user
+    user = current_user
     @cheer_msg = ""
     if user.cheer_point < 10 then
       user.cheer_point += 1
@@ -16,7 +16,4 @@ class MyStudioController < ApplicationController
     end
   end
 
-  def get_user
-    @user = User.find(1)
-  end
 end
