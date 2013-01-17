@@ -14,6 +14,4 @@ class UserSwitchController < ApplicationController
     session[:user] = user_index
   end
 
-  def post
-  end
 end
