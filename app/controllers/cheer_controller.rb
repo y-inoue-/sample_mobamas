@@ -2,8 +2,12 @@
 class CheerController < ApplicationController
 
   #定数
-  MAX_POINT = 10
+  MAX_POINT = 100
   ADD_POINT = 1
+  
+  LIMIT_COUNT = 10
+  LIMIT_RESET_SEC     = 3 * 60
+  CHEER_INTERVAL_SEC  = 3
 
   # 応援結果
   RESULT_SUCCESS     = 0  # 成功
@@ -11,7 +15,6 @@ class CheerController < ApplicationController
   RESULT_FAIL_TIME   = 2  # 時間を開けていないので失敗
   RESULT_FAIL_LIMIT  = 3  # 応援上限により失敗
 
-  CHEER_INTERVAL_SEC  = 10
   
   def index
     @msg = ''
@@ -41,10 +44,23 @@ class CheerController < ApplicationController
       result_msg = "応援の上限に達しました"
     end
 
-    @msg = "#{user.name}が#{target.name}を応援しました。\n#{result_msg}"
+    @msg = "#{user.name}が#{target.name}を応援しました。\n"
+    @msg += "#{result_msg}\n"
+    @msg += "count=#{user.cheer_count}"
   end
 
   def cheer(user, target)
+    # 応援上限のリセット
+    if user.cheer_updated_at == nil ||
+        (Time.now.to_i / LIMIT_RESET_SEC) > (user.cheer_updated_at.to_i / LIMIT_RESET_SEC)
+      then
+      user.cheer_count = 0
+      user.save
+    end
+    if user.cheer_count >= LIMIT_COUNT
+      return  RESULT_FAIL_LIMIT
+    end
+
     data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
     if data == nil then
       data = CheerUser.new
@@ -55,23 +71,30 @@ class CheerController < ApplicationController
     elsif (Time.now - data.updated_at) < CHEER_INTERVAL_SEC
       return  RESULT_FAIL_TIME
     else
-      p data.updated_at
       data.touch # timestamp更新
     end
-    result = add_point(user)
-    add_point(target)
+    result = add_point(user, true)
+    add_point(target, false)
     return result
   end
 
-  def add_point(user)
+  def add_point(user, is_user)
+    if is_user then
+      user.cheer_count += 1
+      user.cheer_updated_at = Time.now
+    end
+
+    result = RESULT_SUCCESS
     if user.cheer_point < MAX_POINT then
       user.cheer_point += ADD_POINT
       if user.cheer_point > MAX_POINT then
         user.cheer_point = MAX_POINT
       end
-      user.save
-      return RESULT_SUCCESS
+    else
+      result = RESULT_SUCCESS_MAX
     end
-    return  RESULT_SUCCESS_MAX
+
+    user.save
+    return  result
   end
 end

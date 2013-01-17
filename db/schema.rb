@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130117054209) do
+ActiveRecord::Schema.define(:version => 20130117070814) do
 
   create_table "cheer_users", :force => true do |t|
     t.integer  "user_id",    :default => 0
@@ -22,10 +22,12 @@ ActiveRecord::Schema.define(:version => 20130117054209) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "name"
-    t.integer  "cheer_point", :default => 0
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.string    "name"
+    t.integer   "cheer_point",      :default => 0
+    t.datetime  "created_at",                      :null => false
+    t.datetime  "updated_at",                      :null => false
+    t.integer   "cheer_count",      :default => 0
+    t.timestamp "cheer_updated_at"
   end
 
 end
