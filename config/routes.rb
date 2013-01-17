@@ -1,5 +1,8 @@
 # -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  post "cheer/comment"
+  resources :cheer_comments
+
   resources :cheer_users
 
 

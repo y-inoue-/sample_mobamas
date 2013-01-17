@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130117070814) do
+ActiveRecord::Schema.define(:version => 20130117084643) do
+
+  create_table "cheer_comments", :force => true do |t|
+    t.integer  "user_id",    :default => 0
+    t.integer  "target_id",  :default => 0
+    t.string   "comment",    :default => "hello!"
+    t.boolean  "disp",       :default => true
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
 
   create_table "cheer_users", :force => true do |t|
     t.integer  "user_id",    :default => 0

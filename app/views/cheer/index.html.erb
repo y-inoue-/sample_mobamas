@@ -2,5 +2,7 @@
 <p>
 <%= simple_format(@msg) %>
 
+<%= button_to 'コメント', :controller => "cheer", :action => "comment", :target_id => @target.id, :comment => "こんにちわ！" %>
+
 <%= render :partial => 'shared/footer' %>
 

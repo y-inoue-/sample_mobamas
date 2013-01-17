@@ -3,7 +3,8 @@ class CheerController < ApplicationController
 
   #定数
   MAX_POINT = 100
-  ADD_POINT = 1
+  CHEER_POINT = 1
+  COMMENT_POINT = 5
   
   LIMIT_COUNT = 10
   LIMIT_RESET_SEC     = 3 * 60
@@ -17,20 +18,13 @@ class CheerController < ApplicationController
 
   
   def index
-    @msg = ''
-    if params[:target_id].blank? then
-      @msg = 'target_idを指定してアクセスしてください'
-      return
-    end
-
-    begin
-      target = User.find(params[:target_id])
-    rescue ActiveRecord::RecordNotFound
-      @msg = "target_id=#{params[:target_id]}のユーザーは存在しません"
-      return
-    end
-
     user = current_user
+    target = get_target
+    if target == nil then
+      return
+    end
+    @target = target
+
     result = cheer(user, target)
     result_msg = ""
     case result
@@ -50,16 +44,11 @@ class CheerController < ApplicationController
   end
 
   def cheer(user, target)
-    # 応援上限のリセット
-    if user.cheer_updated_at == nil ||
-        (Time.now.to_i / LIMIT_RESET_SEC) > (user.cheer_updated_at.to_i / LIMIT_RESET_SEC)
-      then
-      user.cheer_count = 0
-      user.save
-    end
     if user.cheer_count >= LIMIT_COUNT
       return  RESULT_FAIL_LIMIT
     end
+
+    reset_limit(user)
 
     data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
     if data == nil then
@@ -73,12 +62,70 @@ class CheerController < ApplicationController
     else
       data.touch # timestamp更新
     end
-    result = add_point(user, true)
-    add_point(target, false)
+    result = add_point(user, true, CHEER_POINT)
+    add_point(target, false, CHEER_POINT)
     return result
   end
 
-  def add_point(user, is_user)
+  # 応援コメントを残す
+  # また条件が成立していたらptも増やす
+  # \param  params[:target_id]：応援されたユーザーID
+  # \param  params[:comment]  ：コメントメッセージ
+  def comment
+    user = current_user
+    target = get_target
+    if target == nil then 
+      return
+    end
+
+    # コメント保存
+    com = CheerComment.new
+    com.user_id = user.id
+    com.target_id = target.id
+    com.comment = params[:comment]
+    com.save
+
+    # pt付与
+    reset_limit(user)
+
+    data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
+    if data == nil then
+      return
+    end
+
+    pt_msg = ""
+    unless data.comment then
+      add_point(user, true, COMMENT_POINT)
+      add_point(target, false, COMMENT_POINT)
+      data.comment = true
+      data.save
+      pt_msg = "友情ptが#{user.cheer_point}になりました"
+    else
+      pt_msg = "コメント済みのため友情ptは増えませんでした"
+    end
+
+    @msg = "#{params[:comment]}とコメントしました。\n"
+    @msg += pt_msg
+  end
+
+  private
+  # 特定時間経過による応援の回数上限とコメントによるpt増加フラグのリセットを行う
+  def reset_limit(user)
+    if user.cheer_updated_at == nil ||
+        (Time.now.to_i / LIMIT_RESET_SEC) > (user.cheer_updated_at.to_i / LIMIT_RESET_SEC)
+      then
+      user.cheer_count = 0
+      user.save
+
+      datas = CheerUser.where(:user_id => user.id).where(:comment => true)
+      datas.each do |d|
+        d.comment = false
+        d.save
+      end
+    end
+  end
+
+  def add_point(user, is_user, point)
     if is_user then
       user.cheer_count += 1
       user.cheer_updated_at = Time.now
@@ -86,7 +133,7 @@ class CheerController < ApplicationController
 
     result = RESULT_SUCCESS
     if user.cheer_point < MAX_POINT then
-      user.cheer_point += ADD_POINT
+      user.cheer_point += point
       if user.cheer_point > MAX_POINT then
         user.cheer_point = MAX_POINT
       end
@@ -96,5 +143,22 @@ class CheerController < ApplicationController
 
     user.save
     return  result
+  end
+
+  def get_target
+    target = nil
+    @msg = ''
+    if params[:target_id].blank? then
+      @msg = 'target_idを指定してアクセスしてください'
+      return nil
+    end
+
+    begin
+      target = User.find(params[:target_id])
+    rescue ActiveRecord::RecordNotFound
+      @msg = "target_id=#{params[:target_id]}のユーザーは存在しません"
+      target = nil
+    end
+    target
   end
 end
