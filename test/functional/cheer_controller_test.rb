@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'test_helper'
 
-class UserPageControllerTest < ActionController::TestCase
+class CheerControllerTest < ActionController::TestCase
   test "should get index" do
     get :index
     assert_response :success

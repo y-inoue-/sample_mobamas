@@ -1,0 +1,27 @@
+<h1>Listing cheer_users</h1>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Target</th>
+    <th>Comment</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @cheer_users.each do |cheer_user| %>
+  <tr>
+    <td><%= cheer_user.user_id %></td>
+    <td><%= cheer_user.target_id %></td>
+    <td><%= cheer_user.comment %></td>
+    <td><%= link_to 'Show', cheer_user %></td>
+    <td><%= link_to 'Edit', edit_cheer_user_path(cheer_user) %></td>
+    <td><%= link_to 'Destroy', cheer_user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Cheer user', new_cheer_user_path %>

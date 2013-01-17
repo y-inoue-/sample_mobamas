@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class UserSwitchController < ApplicationController
   def index
     #@user_list = User.all.map{|i| [i.name, i.id]}

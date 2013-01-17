@@ -1,5 +1,11 @@
 # -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  resources :cheer_users
+
+
+  get "cheer/index"
+  post "cheer/index"
+
   get "user_page/index"
 
   get "user_switch/index"
@@ -11,8 +17,6 @@ SampleMobamas::Application.routes.draw do
   get "my_studio/index"
 
   resources :users
-
-
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

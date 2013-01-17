@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class UserPageController < ApplicationController
   def index
     if params[:id].blank? ||
