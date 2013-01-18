@@ -1,11 +1,11 @@
 # -*- encoding : utf-8 -*-
 class UserSwitchController < ApplicationController
+
+  # 操作するユーザーを切り替える
+  # \param  params[:user_id]  ：切り替え対象のユーザーID
   def index
-    #@user_list = User.all.map{|i| [i.name, i.id]}
-    
-    #ユーザーの切り替えはURLの引数で行う
     begin 
-      user_index = params[:id]
+      user_index = params[:user_id]
       @user = User.find(user_index)
     rescue ActiveRecord::RecordNotFound
       user_index = 1

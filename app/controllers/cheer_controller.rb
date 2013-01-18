@@ -110,6 +110,7 @@ class CheerController < ApplicationController
 
   private
   # 特定時間経過による応援の回数上限とコメントによるpt増加フラグのリセットを行う
+  # \param  user  ：リセット対象のユーザー
   def reset_limit(user)
     if user.cheer_updated_at == nil ||
         (Time.now.to_i / LIMIT_RESET_SEC) > (user.cheer_updated_at.to_i / LIMIT_RESET_SEC)
@@ -125,8 +126,12 @@ class CheerController < ApplicationController
     end
   end
 
-  def add_point(user, is_user, point)
-    if is_user then
+  # 友情ptを付与する
+  # \param  user      ：対象ユーザー
+  # \param  is_myself ：対象ユーザーが自分か
+  # \param  point     ：付与するpt
+  def add_point(user, is_myself, point)
+    if is_myself then
       user.cheer_count += 1
       user.cheer_updated_at = Time.now
     end
@@ -145,6 +150,8 @@ class CheerController < ApplicationController
     return  result
   end
 
+  # ターゲットのユーザーを取得する
+  # \param  params[:target_id]  ：ターゲットユーザーのID
   def get_target
     target = nil
     @msg = ''
