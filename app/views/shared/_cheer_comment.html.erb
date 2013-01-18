@@ -1,0 +1,14 @@
+<br><br>
+<b>応援コメント</b><br>
+
+<% if cheer_comment.blank? then %>
+  直近のコメントはありません<br>
+<% else %>
+  <% cheer_comment.each do |comment| %>
+    <%= comment.user.name %><br>
+    &nbsp;&nbsp;<%= comment.comment %><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<%= comment.created_at.localtime %><br>
+    <br>
+  <% end %>
+<% end %>
+<br>

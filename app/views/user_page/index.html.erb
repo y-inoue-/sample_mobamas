@@ -1,6 +1,8 @@
 <h1><%= @user.name %>さんのページ</h1>
 
-<%= button_to '応援', :controller => "cheer", :action => "index", :target_id => @user.id %>
+<%= button_to '応援する', :controller => "cheer", :action => "index", :target_id => @user.id %>
 
+<%= render partial: "shared/cheer_comment", object: @comments %>
+<%= link_to "もっと見る", controller: "cheer_comment_view", action: "index", user_id: @user.id %>
 <%= render :partial => 'shared/footer' %>
 

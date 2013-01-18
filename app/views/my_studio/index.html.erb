@@ -2,4 +2,9 @@
 
 友情pt:<%= @user.cheer_point %>
 
-<%= render :partial => 'shared/footer' %>
+<%= render partial: "shared/cheer_comment",
+            object: @comments
+%>
+<%= link_to 'もっと見る', controller: "cheer_comment_view", action: "index", user_id: @user.id %>
+
+<%= render partial: "shared/footer" %>
