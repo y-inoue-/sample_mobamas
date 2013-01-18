@@ -9,6 +9,7 @@ class CheerCommentViewController < ApplicationController
       return
     end
 
+    @myself = current_user
     @comments = get_cheer_comments(@user.id, 20)
   end
 end

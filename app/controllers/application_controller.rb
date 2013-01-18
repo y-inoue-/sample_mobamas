@@ -15,6 +15,6 @@ class ApplicationController < ActionController::Base
     # \param  user_id   ：応援コメントを取得するユーザーID
     # \param  limit_num ：最大取得数
     def get_cheer_comments(user_id, limit_num)
-      comment = CheerComment.where(target_id: user_id).where(disp: true).order("updated_at DESC").limit(limit_num)
+      comment = CheerComment.where(target_id: user_id).order("updated_at DESC").limit(limit_num)
     end
 end

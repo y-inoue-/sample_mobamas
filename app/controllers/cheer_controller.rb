@@ -71,7 +71,7 @@ class CheerController < ApplicationController
   # また条件が成立していたらptも増やす
   # \param  params[:target_id]：応援されたユーザーID
   # \param  params[:comment]  ：コメントメッセージ
-  def comment
+  def post_comment
     user = current_user
     target = get_target
     if target == nil then 

@@ -1,6 +1,9 @@
 <h1><%= @user.name %>への応援コメント</h1>
 <%= render partial: "shared/cheer_comment",
-           object: @comments
+  object: @comments,
+  locals: { is_myself: @user.id == @myself.id,
+            myself_id: @myself.id
+          }
 %>
 
 <%= render partial: "shared/footer" %>

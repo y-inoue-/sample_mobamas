@@ -5,7 +5,7 @@
     <th>User</th>
     <th>Target</th>
     <th>Comment</th>
-    <th>Disp</th>
+    <th>Updated</th>
     <th></th>
     <th></th>
     <th></th>
@@ -16,7 +16,7 @@
     <td><%= cheer_comment.user_id %></td>
     <td><%= cheer_comment.target_id %></td>
     <td><%= cheer_comment.comment %></td>
-    <td><%= cheer_comment.disp %></td>
+    <td><%= cheer_comment.updated_at.localtime %></td>
     <td><%= link_to 'Show', cheer_comment %></td>
     <td><%= link_to 'Edit', edit_cheer_comment_path(cheer_comment) %></td>
     <td><%= link_to 'Destroy', cheer_comment, method: :delete, data: { confirm: 'Are you sure?' } %></td>

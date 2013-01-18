@@ -2,7 +2,7 @@
 SampleMobamas::Application.routes.draw do
   get "cheer_comment_view/index"
 
-  post "cheer/comment"
+  post "cheer/post_comment"
   resources :cheer_comments
 
   resources :cheer_users
