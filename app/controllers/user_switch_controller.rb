@@ -8,7 +8,7 @@ class UserSwitchController < ApplicationController
       user_index = params[:user_id]
       @user = User.find(user_index)
     rescue ActiveRecord::RecordNotFound
-      user_index = 1
+      user_index = User.first.id 
       @user = User.find(user_index)
     end
     session[:user] = user_index

@@ -5,8 +5,8 @@ class ApplicationController < ActionController::Base
   private
     # 現在の操作ユーザーを取得する
     def current_user
-      if session[:user].blank? then
-        session[:user] = 1
+     if session[:user].blank? then
+        session[:user] = User.first.id
       end
       user = User.find(session[:user])
     end

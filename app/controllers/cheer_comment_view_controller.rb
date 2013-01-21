@@ -12,4 +12,8 @@ class CheerCommentViewController < ApplicationController
     @myself = current_user
     @comments = get_cheer_comments(@user.id, 20)
   end
+
+  def delete_success
+
+  end
 end

@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  get "cheer_comment_view/delete_success"
+
   get "cheer_comment_view/index"
 
   post "cheer/post_comment"
