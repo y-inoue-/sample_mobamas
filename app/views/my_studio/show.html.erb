@@ -1,0 +1,13 @@
+<h1>マイスタジオ(<%= @user.name %>)</h1>
+
+友情pt:<%= @user.cheer_point %>
+
+<%= render partial: "shared/cheer_comment",
+            object: @comments,
+            locals: { is_myself: true,
+                      myself_id: @user.id
+                    }
+%>
+<%= link_to 'もっと見る', controller: "cheer_comment_view", action: "index", user_id: @user.id, method: :get %>
+
+<%= render partial: "shared/footer" %>

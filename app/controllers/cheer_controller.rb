@@ -77,6 +77,7 @@ class CheerController < ApplicationController
     if target == nil then 
       return
     end
+    @target = target
 
     # コメント保存
     com = CheerComment.new
