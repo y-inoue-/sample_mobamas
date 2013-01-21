@@ -4,10 +4,8 @@ one:
   user_id: 1
   target_id: 1
   comment: MyString
-  disp: false
 
 two:
   user_id: 1
   target_id: 1
   comment: MyString
-  disp: false

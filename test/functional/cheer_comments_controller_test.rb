@@ -18,7 +18,7 @@ class CheerCommentsControllerTest < ActionController::TestCase
 
   test "should create cheer_comment" do
     assert_difference('CheerComment.count') do
-      post :create, cheer_comment: { comment: @cheer_comment.comment, disp: @cheer_comment.disp, target_id: @cheer_comment.target_id, user_id: @cheer_comment.user_id }
+      post :create, cheer_comment: { comment: @cheer_comment.comment, target_id: @cheer_comment.target_id, user_id: @cheer_comment.user_id }
     end
 
     assert_redirected_to cheer_comment_path(assigns(:cheer_comment))
@@ -35,7 +35,7 @@ class CheerCommentsControllerTest < ActionController::TestCase
   end
 
   test "should update cheer_comment" do
-    put :update, id: @cheer_comment, cheer_comment: { comment: @cheer_comment.comment, disp: @cheer_comment.disp, target_id: @cheer_comment.target_id, user_id: @cheer_comment.user_id }
+    put :update, id: @cheer_comment, cheer_comment: { comment: @cheer_comment.comment, target_id: @cheer_comment.target_id, user_id: @cheer_comment.user_id }
     assert_redirected_to cheer_comment_path(assigns(:cheer_comment))
   end
 
