@@ -1,4 +1,23 @@
+# -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  get "cheer_comment_view/index"
+
+  post "cheer/post_comment"
+  resources :cheer_comments
+
+  resources :cheer_users
+
+
+  get "cheer/index"
+  post "cheer/index"
+
+  get "user_page/index"
+
+  get "user_switch/index"
+
+  get "my_studio/index"
+
+  resources :users
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -48,7 +67,7 @@ SampleMobamas::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  root to: 'my_studio#index', as: 'my_studio'
 
   # See how all your routes lay out with "rake routes"
 

@@ -1,0 +1,23 @@
+<br><br>
+<b>応援コメント</b><br>
+
+<% if cheer_comment.blank? then %>
+  直近のコメントはありません<br>
+<% else %>
+  <% cheer_comment.each do |comment| %>
+    <%= link_to comment.user.name, controller: "user_page", action: "index", user_id: comment.user.id %><br>
+    &nbsp;&nbsp;<%= comment.comment %><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<%= comment.created_at.localtime %><br>
+    
+    <% if is_myself then %>
+      <%= button_to "応援する", controller: "cheer", action: "index", target_id: comment.user.id %>
+    <% end %>
+
+    <% if is_myself || myself_id == comment.user.id then %>
+      <%= button_to "削除する", comment, method: :delete, confirm: "削除しますか？" %>
+      <!--%= button_to "削除する", controller: "cheer_comments", actions: "destroy", id: comment.id %-->
+    <% end %>
+    <br>
+  <% end %>
+<% end %>
+<br>

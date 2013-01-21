@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>User:</b>
+  <%= @cheer_comment.user_id %>
+</p>
+
+<p>
+  <b>Target:</b>
+  <%= @cheer_comment.target_id %>
+</p>
+
+<p>
+  <b>Comment:</b>
+  <%= @cheer_comment.comment %>
+</p>
+
+<%= link_to 'Edit', edit_cheer_comment_path(@cheer_comment) %> |
+<%= link_to 'Back', cheer_comments_path %>
