@@ -88,7 +88,8 @@ class CheerController < ApplicationController
       return
     end
 
-    unless data.comment then
+    is_add_point = !data.comment # 書き換わるので保存しておく
+    if is_add_point then
       add_point(user, true, COMMENT_POINT)
       add_point(target, false, COMMENT_POINT)
       data.comment = true
@@ -96,7 +97,7 @@ class CheerController < ApplicationController
     end
 
     @response = { comment: params[:comment],
-                  add_point: data.comment,
+                  is_add_point: is_add_point,
                   point: user.cheer_point
     }
 

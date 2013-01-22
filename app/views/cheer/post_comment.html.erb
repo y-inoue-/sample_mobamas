@@ -3,7 +3,7 @@
 
 <%= @response[:comment] %>とコメントしました<br>
 
-<% unless @response[:add_point] then %>
+<% if @response[:is_add_point] then %>
   友情ptが<%= @response[:point] %>になりました
 <% else %>
   コメント済みのため友情ptは増えませんでした

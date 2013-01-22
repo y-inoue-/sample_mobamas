@@ -9,13 +9,26 @@ class UserPageController < ApplicationController
         session[:user].blank? ||
         session[:user].to_s == params[:user_id]
         then
-      redirect_to :controller => 'my_studio', :action => 'index'
+      redirect_to my_studio_index_path
       return
     else
-      @user = User.find(params[:user_id])
+      begin
+        user = User.find(params[:user_id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to error_index_path
+        return
+      end
     end
 
-    @myself = current_user
-    @comments = get_cheer_comments(@user.id, 3)
+    comment_info = get_cheer_comment_info(user.id, 3)
+    @response = { user_id: user.id,
+                  user_name: user.name,
+                  comment_info: comment_info
+    }
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @response }
+    end
   end
 end

@@ -1,9 +1,4 @@
-<h1><%= @user.name %>への応援コメント</h1>
-<%= render partial: "shared/cheer_comment",
-  object: @comments,
-  locals: { is_myself: @user.id == @myself.id,
-            myself_id: @myself.id
-          }
-%>
+<h1><%= @response[:user_name] %>への応援コメント</h1>
+<%= render partial: "shared/cheer_comment", object: @response[:comment_info] %>
 
 <%= render partial: "shared/footer" %>
