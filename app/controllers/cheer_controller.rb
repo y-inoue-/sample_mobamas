@@ -21,26 +21,19 @@ class CheerController < ApplicationController
     user = current_user
     target = get_target
     if target == nil then
+      redirect_to error_index_path
       return
     end
-    @target = target
+    @response = { target_id: target.id, target_name: target.name }
 
     result = cheer(user, target)
-    result_msg = ""
-    case result
-    when RESULT_SUCCESS
-      result_msg = "ptが#{user.cheer_point}になりました"
-    when RESULT_SUCCESS_MAX
-      result_msg = "応援しましたがこれ以上ptを増やすことはできません"
-    when RESULT_FAIL_TIME
-      result_msg = "前回の応援から時間が経っていません"
-    when RESULT_FAIL_LIMIT
-      result_msg = "応援の上限に達しました"
+    @response[:result] = result
+    @response[:point]  = user.cheer_point
+    
+    respond_to do |format|
+      format.html
+      format.json { render json: @response }
     end
-
-    @msg = "#{user.name}が#{target.name}を応援しました。\n"
-    @msg += "#{result_msg}\n"
-    @msg += "count=#{user.cheer_count}"
   end
 
   def cheer(user, target)
@@ -75,9 +68,9 @@ class CheerController < ApplicationController
     user = current_user
     target = get_target
     if target == nil then 
+      redirect_to error_index_path
       return
     end
-    @target = target
 
     # コメント保存
     com = CheerComment.new
@@ -91,22 +84,26 @@ class CheerController < ApplicationController
 
     data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
     if data == nil then
+      redirect_to error_index_path
       return
     end
 
-    pt_msg = ""
     unless data.comment then
       add_point(user, true, COMMENT_POINT)
       add_point(target, false, COMMENT_POINT)
       data.comment = true
       data.save
-      pt_msg = "友情ptが#{user.cheer_point}になりました"
-    else
-      pt_msg = "コメント済みのため友情ptは増えませんでした"
     end
 
-    @msg = "#{params[:comment]}とコメントしました。\n"
-    @msg += pt_msg
+    @response = { comment: params[:comment],
+                  add_point: data.comment,
+                  point: user.cheer_point
+    }
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @response }
+    end
   end
 
   private
@@ -157,14 +154,14 @@ class CheerController < ApplicationController
     target = nil
     @msg = ''
     if params[:target_id].blank? then
-      @msg = 'target_idを指定してアクセスしてください'
+      logger.debug("target_idがblank")
       return nil
     end
 
     begin
       target = User.find(params[:target_id])
     rescue ActiveRecord::RecordNotFound
-      @msg = "target_id=#{params[:target_id]}のユーザーは存在しません"
+      logger.debug("target_id=#{params[:target_id]}のユーザーは存在しません")
       target = nil
     end
     target

@@ -1,6 +1,13 @@
 <h1>Cheer#comment</h1>
 <p>
-<%= simple_format(@msg) %>
+
+<%= @response[:comment] %>とコメントしました<br>
+
+<% unless @response[:add_point] then %>
+  友情ptが<%= @response[:point] %>になりました
+<% else %>
+  コメント済みのため友情ptは増えませんでした
+<% end %>
 
 <%= render :partial => 'shared/footer' %>
 

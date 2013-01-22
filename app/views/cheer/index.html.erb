@@ -1,8 +1,23 @@
 <h1>Cheer#index</h1>
 <p>
-<%= simple_format(@msg) %>
 
-<%= button_to 'コメント', :controller => "cheer", :action => "post_comment", :target_id => @target, :comment => "こんにちわ！" %>
+<%= @response[:target_name] %>に応援しました<br>
+
+<% case @response[:result]
+  when 0 %>
+    ptが<%= @response[:point] %>になりました
+<% when 1 %> 
+  応援しましたがこれ以上ptを増やすことはできません
+<% when 2 %>
+  前回の応援から時間が経っていません
+<% when 3 %>
+  応援の上限に達しました
+<% else %>
+  illegal result = <%= @response[:result] %>
+<% end %>
+<br>
+
+<%= button_to 'コメント', cheer_post_comment_path(target_id: @response[:target_id], comment: "こんにちわ！") %>
 
 <%= render :partial => 'shared/footer' %>
 
