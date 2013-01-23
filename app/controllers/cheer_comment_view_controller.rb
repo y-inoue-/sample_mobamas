@@ -23,17 +23,20 @@ class CheerCommentViewController < ApplicationController
   # コメントの削除を実行
   # \param  params[:comment_id] ：削除するコメントID
   def delete_exec
+    user = current_user
     begin 
-      CheerComment.destroy(params[:comment_id])
+      #CheerComment.destroy(params[:comment_id])
+      comment = CheerComment.find(params[:comment_id])
+      unless comment.user_id == user.id ||
+              comment.target_id == user.id
+            then
+        redirect_to error_index_path
+      end
+      comment.destroy
     rescue
       redirect_to error_index_path
       return
     end
-
-    redirect_to cheer_comment_view_delete_success_path
   end
 
-  # コメントの削除に成功
-  def delete_success
-  end
 end

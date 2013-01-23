@@ -44,6 +44,6 @@ class CheerCommentsControllerTest < ActionController::TestCase
       delete :destroy, id: @cheer_comment
     end
 
-    assert_redirected_to cheer_comment_view_delete_success_path
+    assert_redirected_to cheer_comments_url
   end
 end

@@ -4,8 +4,6 @@ SampleMobamas::Application.routes.draw do
 
   get "error/index"
 
-  get "cheer_comment_view/delete_success"
-
   get "cheer_comment_view/index"
 
   post "cheer/post_comment"
