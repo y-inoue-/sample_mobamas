@@ -16,7 +16,10 @@ class CheerController < ApplicationController
   RESULT_FAIL_TIME   = 2  # 時間を開けていないので失敗
   RESULT_FAIL_LIMIT  = 3  # 応援上限により失敗
 
-  
+  # POST
+  # 応援を行う
+  # また条件が成立していたらptも増やす
+  # \param  params[:target_id]：応援されたユーザーID
   def index
     user = current_user
     target = get_target

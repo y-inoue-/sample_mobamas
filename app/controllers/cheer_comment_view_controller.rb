@@ -30,7 +30,6 @@ class CheerCommentViewController < ApplicationController
       return
     end
 
-    # deleteに成功したらcheer_coments_controller内からredirectされる
     redirect_to cheer_comment_view_delete_success_path
   end
 
