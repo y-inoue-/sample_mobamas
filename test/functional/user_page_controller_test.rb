@@ -24,7 +24,7 @@ class UserPageControllerTest < ActionController::TestCase
   end
 
   test "should get index user_id illegal" do
-    get :index, user_id: users(:two).id + 1
+    get :index, user_id: 0
     assert_redirected_to error_index_path
   end
 

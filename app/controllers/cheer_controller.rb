@@ -1,21 +1,10 @@
 # -*- encoding : utf-8 -*-
 class CheerController < ApplicationController
 
-  #定数
-  MAX_POINT = 100
-  CHEER_POINT = 1
-  COMMENT_POINT = 5
+  #test時に値を変更したいこともあったのでグローバル変数化
+  $cheer_interval_sec = Settings.cheer.cheer_interval_sec
+  $cheer_limit_reset_sec = Settings.cheer.limit_reset_sec 
   
-  LIMIT_COUNT = 10
-  LIMIT_RESET_SEC     = 3 * 60
-  CHEER_INTERVAL_SEC  = 3
-
-  # 応援結果
-  RESULT_SUCCESS     = 0  # 成功
-  RESULT_SUCCESS_MAX = 1  # 成功したけど自分は既にpointMAX
-  RESULT_FAIL_TIME   = 2  # 時間を開けていないので失敗
-  RESULT_FAIL_LIMIT  = 3  # 応援上限により失敗
-
   # POST
   # 応援を行う
   # また条件が成立していたらptも増やす
@@ -23,7 +12,7 @@ class CheerController < ApplicationController
   def index
     user = current_user
     target = get_target
-    if target == nil then
+    if target == nil || user == target then
       redirect_to error_index_path
       return
     end
@@ -40,11 +29,10 @@ class CheerController < ApplicationController
   end
 
   def cheer(user, target)
-    if user.cheer_count >= LIMIT_COUNT
-      return  RESULT_FAIL_LIMIT
-    end
-
     reset_limit(user)
+    if user.cheer_count >= Settings.cheer.limit_count
+      return  CHEER_RESULT[:fail_limit]
+    end
 
     data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
     if data == nil then
@@ -53,13 +41,13 @@ class CheerController < ApplicationController
       data.target_id = target.id
       data.comment = false
       data.save
-    elsif (Time.now - data.updated_at) < CHEER_INTERVAL_SEC
-      return  RESULT_FAIL_TIME
+    elsif (Time.now - data.updated_at) < $cheer_interval_sec
+      return  CHEER_RESULT[:fail_time]
     else
       data.touch # timestamp更新
     end
-    result = add_point(user, true, CHEER_POINT)
-    add_point(target, false, CHEER_POINT)
+    result = add_point(user, true, Settings.cheer.add_cheer_point)
+    add_point(target, false, Settings.cheer.add_cheer_point)
     return result
   end
 
@@ -93,8 +81,8 @@ class CheerController < ApplicationController
 
     is_add_point = !data.comment # 書き換わるので保存しておく
     if is_add_point then
-      add_point(user, true, COMMENT_POINT)
-      add_point(target, false, COMMENT_POINT)
+      add_point(user, true, Settings.cheer.add_comment_point)
+      add_point(target, false, Settings.cheer.add_comment_point)
       data.comment = true
       data.save
     end
@@ -115,7 +103,8 @@ class CheerController < ApplicationController
   # \param  user  ：リセット対象のユーザー
   def reset_limit(user)
     if user.cheer_updated_at == nil ||
-        (Time.now.to_i / LIMIT_RESET_SEC) > (user.cheer_updated_at.to_i / LIMIT_RESET_SEC)
+        $cheer_limit_reset_sec == 0 ||
+        (Time.now.to_i / $cheer_limit_reset_sec) > (user.cheer_updated_at.to_i / $cheer_limit_reset_sec)
       then
       user.cheer_count = 0
       user.save
@@ -138,14 +127,14 @@ class CheerController < ApplicationController
       user.cheer_updated_at = Time.now
     end
 
-    result = RESULT_SUCCESS
-    if user.cheer_point < MAX_POINT then
+    result = CHEER_RESULT[:success]
+    if user.cheer_point < Settings.cheer.max_point then
       user.cheer_point += point
-      if user.cheer_point > MAX_POINT then
-        user.cheer_point = MAX_POINT
+      if user.cheer_point > Settings.cheer.max_point then
+        user.cheer_point = Settings.cheer.max_point
       end
     else
-      result = RESULT_SUCCESS_MAX
+      result = CHEER_RESULT[:success_max]
     end
 
     user.save

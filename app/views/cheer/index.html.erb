@@ -4,13 +4,13 @@
 <%= @response[:target_name] %>に応援しました<br>
 
 <% case @response[:result]
-  when 0 %>
+  when CHEER_RESULT[:success] %>
     ptが<%= @response[:point] %>になりました
-<% when 1 %> 
+<% when CHEER_RESULT[:success_max] %>
   応援しましたがこれ以上ptを増やすことはできません
-<% when 2 %>
+<% when CHEER_RESULT[:fail_time] %>
   前回の応援から時間が経っていません
-<% when 3 %>
+<% when CHEER_RESULT[:fail_limit] %>
   応援の上限に達しました
 <% else %>
   illegal result = <%= @response[:result] %>

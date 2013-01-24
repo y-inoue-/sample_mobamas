@@ -2,8 +2,8 @@
 
 one:
   name: user0001 
-  cheer_point: 1
+  cheer_point: 0
 
 two:
   name: user0002
-  cheer_point: 1
+  cheer_point: 0

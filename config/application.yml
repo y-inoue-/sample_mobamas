@@ -1,0 +1,28 @@
+# app/config/application.yml
+defaults: &defaults
+  #応援関連の定数
+  cheer:
+    max_point: 100
+    add_cheer_point: 1
+    add_comment_point: 5
+    limit_count: 10
+    limit_reset_sec: 180
+    cheer_interval_sec: 3
+
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+  cheer:
+    max_point: 3
+    add_cheer_point: 1
+    add_comment_point: 10
+    limit_count: 10
+    limit_reset_sec: 180
+    cheer_interval_sec: 0
+
+
+production:
+  <<: *defaults

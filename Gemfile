@@ -40,3 +40,5 @@ gem 'jquery-rails'
 group :development do
   gem "rails-erd"
 end
+
+gem 'settingslogic'
