@@ -17,5 +17,9 @@ class ActiveSupport::TestCase
     @request.session[:user] = user.id
   end
 
+  def get_current_user_id
+    @request.session[:user]
+  end
+
 
 end

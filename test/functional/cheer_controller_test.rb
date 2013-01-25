@@ -20,8 +20,15 @@ class CheerControllerTest < ActionController::TestCase
     assert_equal result["point"], check_point
     assert_equal user1.cheer_point, check_point
     assert_equal user2.cheer_point, check_point
+    assert_operator check_point, :<=, Settings.cheer.max_point
   end
 
+  def clamp_point(point)
+    if point > Settings.cheer.max_point then
+      return Settings.cheer.max_point
+    end
+    point
+  end
 
   #ポイント上限チェック
   test "should post index(point)" do
@@ -34,10 +41,7 @@ class CheerControllerTest < ActionController::TestCase
     check_point = 0
     count.times do 
       cheer
-      check_point += Settings.cheer.add_cheer_point
-      if check_point > Settings.cheer.max_point
-        check_point = Settings.cheer.max_point
-      end
+      check_point = clamp_point( check_point + Settings.cheer.add_cheer_point )
       check_cheer_result(CHEER_RESULT[:success], check_point)
     end
     check_cheer_result(CHEER_RESULT[:success], Settings.cheer.max_point)
@@ -104,21 +108,102 @@ class CheerControllerTest < ActionController::TestCase
     $cheer_limit_reset_sec = reset_sec
     check_cheer_limit_cout(Settings.cheer.limit_count-1)
   end
+ 
+  def post_comment(comment, target = users(:two))
+   assert_difference('CheerComment.count') do
+      post :post_comment, target_id: target.id, comment: comment, format: :json
+      assert_response :success
+    end
+  end
 
-  test "should post index target_id none" do
+  def check_comment_result(is_add_point, check_point, comment)
+    result = JSON.parse(response.body)
+    user1 = User.find(users(:one))
+    user2 = User.find(users(:two))
+    assert_equal result["is_add_point"], is_add_point
+    assert_equal result["comment"], comment
+    assert_equal result["point"], check_point
+    assert_equal user1.cheer_point, check_point
+    assert_equal user2.cheer_point, check_point
+  end
+
+
+  #ポイント上限チェック
+  test "should post comment(point)" do
+    # 連続コメントでリセットされないように
+    reset_sec = 24 * 3600
+    $cheer_limit_reset_sec = reset_sec
+    
+    # コメントを行う際に応援が実行されていることが前提になっている
+    check_point = Settings.cheer.add_cheer_point
+    cheer
+    check_cheer_result(CHEER_RESULT[:success], check_point)
+
+    comment = 'hello!'
+    check_point = clamp_point( check_point + Settings.cheer.add_comment_point )
+    post_comment(comment)
+    check_comment_result(true, check_point, comment)
+
+    # 連続コメントでポイントが増えないことを確認
+    post_comment(comment)
+    check_comment_result(false, check_point, comment)
+
+    # limit_resetでポイントが増えることを確認
+    $cheer_limit_reset_sec = 0
+    check_point = clamp_point( check_point + Settings.cheer.add_comment_point )
+    post_comment(comment)
+    check_comment_result(true, check_point, comment)
+    $cheer_limit_reset_sec = reset_sec
+    post_comment(comment)
+    check_comment_result(false, check_point, comment)
+  end
+
+  test "should post index(target_id none)" do
     post :index
     assert_redirected_to error_index_path
   end
 
-  test "should post index target_id myself" do
-    post :index, target_id: @request.session[:user]
+  test "should post index(target_id myself)" do
+    post :index, target_id: get_current_user_id
     assert_redirected_to error_index_path
   end
 
-  test "should post index illegal target_id" do
+  test "should post index(illegal target_id)" do
     post :index, target_id: 0
     assert_redirected_to error_index_path
   end
 
+  test "should post comment(param none)" do
+    post :post_comment
+    assert_redirected_to error_index_path
+  end
+
+  test "should post comment(target_id none)" do
+    post :post_comment, comment: "hello!"
+    assert_redirected_to error_index_path
+  end
+
+  test "should post comment(comment none)" do
+    post :post_comment, target_id: users(:two).id
+    assert_redirected_to error_index_path
+  end
+
+  test "should post comment(target_id myself)" do
+    post :post_comment, target_id: get_current_user_id, comment: "hello!"
+    assert_redirected_to error_index_path
+  end
+
+  test "should post comment(illegal target_id)" do
+    post :post_comment, target_id: 0, comment: "hello!"
+    assert_redirected_to error_index_path
+  end
+
+  test "should post comment(don't exec cheer)" do
+    post :post_comment, target_id: users(:two), comment: "hello!"
+    assert_redirected_to error_index_path
+  end
+
+
 
 end
+

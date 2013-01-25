@@ -58,7 +58,7 @@ class CheerController < ApplicationController
   def post_comment
     user = current_user
     target = get_target
-    if target == nil then 
+    if target == nil || target == user then 
       redirect_to error_index_path
       return
     end
