@@ -14,7 +14,7 @@
     <% end %>
 
     <% if comment[:can_delete] then %>
-      <%= button_to "削除する", cheer_comment_view_delete_exec_path(comment_id: comment[:comment_id]), confirm: "削除しますか？" %>
+      <%= button_to "削除する", cheer_comment_view_delete_exec_path(comment_id: comment[:comment_id]), method: :delete, confirm: "削除しますか？" %>
     <% end %>
     <br>
   <% end %>

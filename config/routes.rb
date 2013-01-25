@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
-  post "cheer_comment_view/delete_exec"
+  delete "cheer_comment_view/delete_exec"
 
   get "error/index"
 

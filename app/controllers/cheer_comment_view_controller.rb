@@ -31,6 +31,7 @@ class CheerCommentViewController < ApplicationController
               comment.target_id == user.id
             then
         redirect_to error_index_path
+        return
       end
       comment.destroy
     rescue
