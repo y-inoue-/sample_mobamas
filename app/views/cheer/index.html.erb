@@ -1,8 +1,0 @@
-<h1>Cheer#index</h1>
-<p>
-<%= simple_format(@msg) %>
-
-<%= button_to 'コメント', :controller => "cheer", :action => "post_comment", :target_id => @target.id, :comment => "こんにちわ！" %>
-
-<%= render :partial => 'shared/footer' %>
-

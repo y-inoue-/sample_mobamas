@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  name: MyString
-  cheer_point: 1
+  name: user0001 
+  cheer_point: 0
 
 two:
-  name: MyString
-  cheer_point: 1
+  name: user0002
+  cheer_point: 0

@@ -1,5 +1,9 @@
 # -*- encoding : utf-8 -*-
 SampleMobamas::Application.routes.draw do
+  delete "cheer_comment_view/delete_exec"
+
+  get "error/index"
+
   get "cheer_comment_view/index"
 
   post "cheer/post_comment"
@@ -8,8 +12,7 @@ SampleMobamas::Application.routes.draw do
   resources :cheer_users
 
 
-  get "cheer/index"
-  post "cheer/index"
+  post "cheer/post_cheer"
 
   get "user_page/index"
 

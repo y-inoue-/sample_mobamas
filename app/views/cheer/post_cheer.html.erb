@@ -1,0 +1,23 @@
+<h1>Cheer#post_cheer</h1>
+<p>
+
+<%= @response[:target_name] %>に応援しました<br>
+
+<% case @response[:result]
+  when CHEER_RESULT[:success] %>
+    ptが<%= @response[:point] %>になりました
+<% when CHEER_RESULT[:success_max] %>
+  応援しましたがこれ以上ptを増やすことはできません
+<% when CHEER_RESULT[:fail_time] %>
+  前回の応援から時間が経っていません
+<% when CHEER_RESULT[:fail_limit] %>
+  応援の上限に達しました
+<% else %>
+  illegal result = <%= @response[:result] %>
+<% end %>
+<br>
+
+<%= button_to 'コメント', cheer_post_comment_path(target_id: @response[:target_id], comment: "こんにちわ！") %>
+
+<%= render :partial => 'shared/footer' %>
+

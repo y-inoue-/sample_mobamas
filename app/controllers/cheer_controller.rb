@@ -1,54 +1,38 @@
 # -*- encoding : utf-8 -*-
 class CheerController < ApplicationController
 
-  #定数
-  MAX_POINT = 100
-  CHEER_POINT = 1
-  COMMENT_POINT = 5
+  #test時に値を変更したいこともあったのでグローバル変数化
+  $cheer_interval_sec = Settings.cheer.cheer_interval_sec
+  $cheer_limit_reset_sec = Settings.cheer.limit_reset_sec 
   
-  LIMIT_COUNT = 10
-  LIMIT_RESET_SEC     = 3 * 60
-  CHEER_INTERVAL_SEC  = 3
-
-  # 応援結果
-  RESULT_SUCCESS     = 0  # 成功
-  RESULT_SUCCESS_MAX = 1  # 成功したけど自分は既にpointMAX
-  RESULT_FAIL_TIME   = 2  # 時間を開けていないので失敗
-  RESULT_FAIL_LIMIT  = 3  # 応援上限により失敗
-
-  
-  def index
+  # POST
+  # 応援を行う
+  # また条件が成立していたらptも増やす
+  # \param  params[:target_id]：応援されたユーザーID
+  def post_cheer
     user = current_user
     target = get_target
-    if target == nil then
+    if target == nil || user == target then
+      redirect_to error_index_path
       return
     end
-    @target = target
+    @response = { target_id: target.id, target_name: target.name }
 
-    result = cheer(user, target)
-    result_msg = ""
-    case result
-    when RESULT_SUCCESS
-      result_msg = "ptが#{user.cheer_point}になりました"
-    when RESULT_SUCCESS_MAX
-      result_msg = "応援しましたがこれ以上ptを増やすことはできません"
-    when RESULT_FAIL_TIME
-      result_msg = "前回の応援から時間が経っていません"
-    when RESULT_FAIL_LIMIT
-      result_msg = "応援の上限に達しました"
+    result = exec_cheer(user, target)
+    @response[:result] = result
+    @response[:point]  = user.cheer_point
+    
+    respond_to do |format|
+      format.html
+      format.json { render json: @response }
     end
-
-    @msg = "#{user.name}が#{target.name}を応援しました。\n"
-    @msg += "#{result_msg}\n"
-    @msg += "count=#{user.cheer_count}"
   end
 
-  def cheer(user, target)
-    if user.cheer_count >= LIMIT_COUNT
-      return  RESULT_FAIL_LIMIT
-    end
-
+  def exec_cheer(user, target)
     reset_limit(user)
+    if user.cheer_count >= Settings.cheer.limit_count
+      return  CHEER_RESULT[:fail_limit]
+    end
 
     data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
     if data == nil then
@@ -57,13 +41,13 @@ class CheerController < ApplicationController
       data.target_id = target.id
       data.comment = false
       data.save
-    elsif (Time.now - data.updated_at) < CHEER_INTERVAL_SEC
-      return  RESULT_FAIL_TIME
+    elsif (Time.now - data.updated_at) < $cheer_interval_sec
+      return  CHEER_RESULT[:fail_time]
     else
       data.touch # timestamp更新
     end
-    result = add_point(user, true, CHEER_POINT)
-    add_point(target, false, CHEER_POINT)
+    result = add_point(user, true, Settings.cheer.add_cheer_point)
+    add_point(target, false, Settings.cheer.add_cheer_point)
     return result
   end
 
@@ -74,7 +58,8 @@ class CheerController < ApplicationController
   def post_comment
     user = current_user
     target = get_target
-    if target == nil then 
+    if target == nil || target == user then 
+      redirect_to error_index_path
       return
     end
 
@@ -90,22 +75,27 @@ class CheerController < ApplicationController
 
     data = CheerUser.where(:user_id => user.id).where(:target_id => target.id).first
     if data == nil then
+      redirect_to error_index_path
       return
     end
 
-    pt_msg = ""
-    unless data.comment then
-      add_point(user, true, COMMENT_POINT)
-      add_point(target, false, COMMENT_POINT)
+    is_add_point = !data.comment # 書き換わるので保存しておく
+    if is_add_point then
+      add_point(user, true, Settings.cheer.add_comment_point)
+      add_point(target, false, Settings.cheer.add_comment_point)
       data.comment = true
       data.save
-      pt_msg = "友情ptが#{user.cheer_point}になりました"
-    else
-      pt_msg = "コメント済みのため友情ptは増えませんでした"
     end
 
-    @msg = "#{params[:comment]}とコメントしました。\n"
-    @msg += pt_msg
+    @response = { comment: params[:comment],
+                  is_add_point: is_add_point,
+                  point: user.cheer_point
+    }
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @response }
+    end
   end
 
   private
@@ -113,7 +103,8 @@ class CheerController < ApplicationController
   # \param  user  ：リセット対象のユーザー
   def reset_limit(user)
     if user.cheer_updated_at == nil ||
-        (Time.now.to_i / LIMIT_RESET_SEC) > (user.cheer_updated_at.to_i / LIMIT_RESET_SEC)
+        $cheer_limit_reset_sec == 0 ||
+        (Time.now.to_i / $cheer_limit_reset_sec) > (user.cheer_updated_at.to_i / $cheer_limit_reset_sec)
       then
       user.cheer_count = 0
       user.save
@@ -136,14 +127,14 @@ class CheerController < ApplicationController
       user.cheer_updated_at = Time.now
     end
 
-    result = RESULT_SUCCESS
-    if user.cheer_point < MAX_POINT then
+    result = CHEER_RESULT[:success]
+    if user.cheer_point < Settings.cheer.max_point then
       user.cheer_point += point
-      if user.cheer_point > MAX_POINT then
-        user.cheer_point = MAX_POINT
+      if user.cheer_point > Settings.cheer.max_point then
+        user.cheer_point = Settings.cheer.max_point
       end
     else
-      result = RESULT_SUCCESS_MAX
+      result = CHEER_RESULT[:success_max]
     end
 
     user.save
@@ -156,14 +147,14 @@ class CheerController < ApplicationController
     target = nil
     @msg = ''
     if params[:target_id].blank? then
-      @msg = 'target_idを指定してアクセスしてください'
+      logger.debug("target_idがblank")
       return nil
     end
 
     begin
       target = User.find(params[:target_id])
     rescue ActiveRecord::RecordNotFound
-      @msg = "target_id=#{params[:target_id]}のユーザーは存在しません"
+      logger.debug("target_id=#{params[:target_id]}のユーザーは存在しません")
       target = nil
     end
     target

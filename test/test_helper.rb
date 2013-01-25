@@ -11,4 +11,15 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+  
+  def set_current_user(user = users(:one))
+    @request.session = ActionController::TestSession.new
+    @request.session[:user] = user.id
+  end
+
+  def get_current_user_id
+    @request.session[:user]
+  end
+
+
 end
