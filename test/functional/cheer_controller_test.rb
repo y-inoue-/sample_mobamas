@@ -8,7 +8,7 @@ class CheerControllerTest < ActionController::TestCase
   end
 
   def cheer(target = users(:two))
-    post :index, target_id: target.id, format: :json
+    post :post_cheer, target_id: target.id, format: :json
     assert_response :success
   end
 
@@ -159,17 +159,17 @@ class CheerControllerTest < ActionController::TestCase
   end
 
   test "should post index(target_id none)" do
-    post :index
+    post :post_cheer
     assert_redirected_to error_index_path
   end
 
   test "should post index(target_id myself)" do
-    post :index, target_id: get_current_user_id
+    post :post_cheer, target_id: get_current_user_id
     assert_redirected_to error_index_path
   end
 
   test "should post index(illegal target_id)" do
-    post :index, target_id: 0
+    post :post_cheer, target_id: 0
     assert_redirected_to error_index_path
   end
 

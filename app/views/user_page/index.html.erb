@@ -1,6 +1,6 @@
 <h1><%= @response[:user_name] %>さんのページ</h1>
 
-<%= button_to '応援する', cheer_index_path(target_id: @response[:user_id]) %>
+<%= button_to '応援する', cheer_post_cheer_path(target_id: @response[:user_id]) %>
 
 <%= render partial: "shared/cheer_comment",
             object: @response[:comment_info]

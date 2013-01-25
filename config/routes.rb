@@ -12,8 +12,7 @@ SampleMobamas::Application.routes.draw do
   resources :cheer_users
 
 
-  get "cheer/index"
-  post "cheer/index"
+  post "cheer/post_cheer"
 
   get "user_page/index"
 

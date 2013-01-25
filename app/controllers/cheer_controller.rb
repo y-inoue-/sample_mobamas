@@ -9,7 +9,7 @@ class CheerController < ApplicationController
   # 応援を行う
   # また条件が成立していたらptも増やす
   # \param  params[:target_id]：応援されたユーザーID
-  def index
+  def post_cheer
     user = current_user
     target = get_target
     if target == nil || user == target then
@@ -18,7 +18,7 @@ class CheerController < ApplicationController
     end
     @response = { target_id: target.id, target_name: target.name }
 
-    result = cheer(user, target)
+    result = exec_cheer(user, target)
     @response[:result] = result
     @response[:point]  = user.cheer_point
     
@@ -28,7 +28,7 @@ class CheerController < ApplicationController
     end
   end
 
-  def cheer(user, target)
+  def exec_cheer(user, target)
     reset_limit(user)
     if user.cheer_count >= Settings.cheer.limit_count
       return  CHEER_RESULT[:fail_limit]

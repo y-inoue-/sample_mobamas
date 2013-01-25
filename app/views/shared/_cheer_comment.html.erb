@@ -10,7 +10,7 @@
     &nbsp;&nbsp;&nbsp;&nbsp;<%= comment[:date] %><br>
     
     <% if cheer_comment[:is_myself] then %>
-      <%= button_to "応援する", controller: "cheer", action: "index", target_id: comment[:user_id] %>
+      <%= button_to "応援する", cheer_post_cheer_path(target_id: comment[:user_id]) %>
     <% end %>
 
     <% if comment[:can_delete] then %>
